@@ -1,0 +1,14 @@
+{
+  "name": "leap-contracts",
+  "version": "1.0.0",
+  "description": "Contracts for Leap Bridge",
+  "main": "index.js",
+  "repository": "https://github.com/Leap-Exchange/leap-contracts.git",
+  "author": "shr1ftyy <syeamtechdemon@gmail.com>",
+  "license": "MIT",
+  "private": false,
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.4.1",
+    "solc": "^0.8.0"
+  }
+}
