@@ -8,6 +8,12 @@ import './Data.sol';
 // [TODO]
 // import openzeppelin ERC20 Interface so we can use ERC20 token functions
 
+// temporary stand in for IBC contract
+interface ICrossChainMessenger {
+  function sendMsg(address contract_addr, bytes memory message, uint256 gas) external;
+
+}
+
 contract Destination {
   address public owner = msg.sender;
   // transferOwners: (transferData, transferID) => address owner
@@ -31,13 +37,15 @@ contract Destination {
   }
 
   function claim(Data.TransferData memory transferData) public {
-    transferHash = abi.encode(transferData);
-    require(!clainedTransferHashes(transferHash));
-    IERC20(transferData.tokenAddress).transferFrom(msg.sender, address(this), amountPlusFee);
-    claimedTransferHashes[] = true;
+    // improve hashing implementation - optimize for least gas usage. For now, the following will have to do
+    bytes32 transferHash = keccak256(abi.encode(transferData));
+    require(!claimedTransferHashes[transferHash]);
+    IERC20(transferData.tokenAddress).transferFrom(msg.sender, address(this), transferData.amount);
+    claimedTransferHashes[transferHash] = true;
     uint256 currentTime = block.timestamp;
-    rewardData = Data.RewardData(transferHash, transferData.tokeAddress, transferData.destination, getLPFee(transferData, currentTime));
-    bytes32 rewardHashOnion = abi.encode(rewardHashOnion, rewardData);
+    Data.RewardData memory rewardData = Data.RewardData(transferHash, transferData.tokenAddress, transferData.destination, getLPFee(transferData, currentTime));
+    bytes32 rewardHash = keccak256(abi.encode(rewardData));
+    bytes32 rewardHashOnion = keccak256(abi.encode(rewardHash, rewardData));
     transferCount++;
 
     if (transferCount % 100 == 0){
@@ -61,7 +69,9 @@ contract Destination {
     
   }
 
-  function declareNewHashChainHead(){}
+  function declareNewHashChainHead(address L1SourceAddr, bytes memory message, uint256 gas) public {
+    ICrossChainMessenger(L1SourceAddr).sendMsg(L1SourceAddr, message, gas);
+  }
 
   function changeOwner(Data.TransferData memory transferData, uint transferID, address newOwner) public { }
 

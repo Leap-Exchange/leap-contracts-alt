@@ -15,6 +15,7 @@ contract Source {
   uint public CONTRACT_FEE_BASIS_POINTS;
   mapping(bytes32 => bool) public validTransferHashes;
   bytes32 public processedRewardHashOnion;
+  mapping(bytes32 => bool) public knownHashOnions;
 
 
   modifier restricted() {
@@ -33,7 +34,8 @@ contract Source {
   event TransferInitiated(Data.TransferData transfer, uint256 transferID);
 
   function transfer(Data.TransferData memory transferData) public payable {
-    transferHash = abi.encode(transferData);
+    // improve hashing implementation - optimize for least gas usage. For now, the following will have to do
+    bytes32 transferHash = keccak256(abi.encode(transferData));
     require(!validTransferHashes[transferHash]);
     uint256 amountPlusFee = uint(transferData.amount * (10000 + CONTRACT_FEE_BASIS_POINTS)) / 10000;
     if (transferData.tokenAddress != address(0))
@@ -48,7 +50,7 @@ contract Source {
     emit TransferInitiated(transferData, nextTransferID); 
  }
 
-  function processClaims(Data.RewardData[] memory rewardData){		
+  function processClaims(Data.RewardData[] memory rewardData) public{
 
 
   }
