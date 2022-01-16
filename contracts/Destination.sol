@@ -18,8 +18,8 @@ contract Destination {
   // before indexing transferOwners.
   mapping(bytes => mapping(uint => address)) public transferOwners;
   mapping(bytes32 => bool) public claimedTransferHashes;
-	uint256 public transferCount; 
-	bytes32[] rewardHashOnionHistoryList;
+  uint256 public transferCount; 
+  bytes32[] rewardHashOnionHistoryList;
 
 
   modifier restricted() {
@@ -31,18 +31,18 @@ contract Destination {
   }
 
   function claim(Data.TransferData memory transferData) public {
-		transferHash = abi.encode(transferData);
-    require(!clainedTransferHashes(transferHash))
+    transferHash = abi.encode(transferData);
+    require(!clainedTransferHashes(transferHash));
     IERC20(transferData.tokenAddress).transferFrom(msg.sender, address(this), amountPlusFee);
     claimedTransferHashes[] = true;
-		uint256 currentTime = block.timestamp;
+    uint256 currentTime = block.timestamp;
     rewardData = Data.RewardData(transferHash, transferData.tokeAddress, transferData.destination, getLPFee(transferData, currentTime));
-		bytes32 rewardHashOnion = abi.encode(rewardHashOnion, rewardData);
-		transferCount++;
+    bytes32 rewardHashOnion = abi.encode(rewardHashOnion, rewardData);
+    transferCount++;
 
-		if (transferCount % 100 == 0){
-			rewardHashOnionHistoryList.push(rewardHashOnion);
-		}
+    if (transferCount % 100 == 0){
+      rewardHashOnionHistoryList.push(rewardHashOnion);
+    }
 
   }
 
@@ -60,6 +60,8 @@ contract Destination {
     }
     
   }
+
+  function declareNewHashChainHead(){}
 
   function changeOwner(Data.TransferData memory transferData, uint transferID, address newOwner) public { }
 

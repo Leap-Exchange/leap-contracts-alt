@@ -14,7 +14,7 @@ contract Source {
   // [TODO]: what's this?
   uint public CONTRACT_FEE_BASIS_POINTS;
   mapping(bytes32 => bool) public validTransferHashes;
-	bytes32 public processedRewardHashOnion;
+  bytes32 public processedRewardHashOnion;
 
 
   modifier restricted() {
@@ -33,7 +33,7 @@ contract Source {
   event TransferInitiated(Data.TransferData transfer, uint256 transferID);
 
   function transfer(Data.TransferData memory transferData) public payable {
-    transferHash = abi.encode(transferData)
+    transferHash = abi.encode(transferData);
     require(!validTransferHashes[transferHash]);
     uint256 amountPlusFee = uint(transferData.amount * (10000 + CONTRACT_FEE_BASIS_POINTS)) / 10000;
     if (transferData.tokenAddress != address(0))
@@ -48,9 +48,9 @@ contract Source {
     emit TransferInitiated(transferData, nextTransferID); 
  }
 
-	function processClaims(Data.RewardData[] memory rewardData){		
+  function processClaims(Data.RewardData[] memory rewardData){		
 
 
-	}
+  }
 
 }
