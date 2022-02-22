@@ -3,14 +3,17 @@ pragma solidity 0.8.11;
 pragma experimental ABIEncoderV2;
 
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
+import '@openzeppelin/contracts/utils/math/SafeMath.sol';
 import './utils/Data.sol';
 
 // [TODO]
 // import openzeppelin ERC20 Interface so we can use ERC20 token functions
 
 contract Source {
+  using SafeMath for uint256;
+
   address public owner;
-  uint public CONTRACT_FEE_BASIS_POINTS;
+  uint256 public CONTRACT_FEE_BASIS_POINTS;
   // TODO: Better indexing of transferhashes for UI? 
   mapping(bytes32 => bool) public validTransferHashes;
   bytes32 processedRewardHashOnion;
@@ -43,7 +46,7 @@ contract Source {
     // improve hashing implementation - optimize for least gas usage. For now, the following will have to do
     bytes32 transferHash = keccak256(abi.encodePacked(abi.encode(transferData), nextTransferID));
     require(!validTransferHashes[transferHash], 'this transfer '); // error message change?
-    uint256 amountPlusFee = (transferData.amount * (10000 + CONTRACT_FEE_BASIS_POINTS)) / 10000; // 0.05% fee
+    uint256 amountPlusFee = transferData.amount.mul(10000 + CONTRACT_FEE_BASIS_POINTS).div(10000; // 0.05% fee
     if (transferData.srcTokenAddress != address(0))
     {
       IERC20(transferData.srcTokenAddress).transferFrom(msg.sender, address(this), amountPlusFee);

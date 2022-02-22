@@ -1,7 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.11;
+import '@openzeppelin/contracts/utils/math/SafeMath.sol';
 
 library Data{
+  using SafeMath for uint256;
+
   struct TransferData { 
     address srcTokenAddress;
     address destTokenAddress;

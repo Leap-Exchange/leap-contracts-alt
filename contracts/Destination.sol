@@ -3,6 +3,7 @@ pragma solidity 0.8.11;
 pragma experimental ABIEncoderV2;
 
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
+import '@openzeppelin/contracts/utils/math/SafeMath.sol';
 import './utils/Data.sol';
 
 // temporary stand-in for an IBC contract
@@ -12,6 +13,8 @@ interface ICrossChainMessenger {
 }
 
 contract Destination {
+  using SafeMath for uint256;
+
   address public owner;
   address public L2SourceAddr;
   mapping(bytes32 => bool) claimedTransferHashes;
@@ -75,12 +78,12 @@ contract Destination {
     if (currentTime < transfer.startTime){
       return 0;
     }
-    else if (currentTime >= transfer.startTime + transfer.feeRampup){
+    else if (currentTime >= transfer.startTime.add(transfer.feeRampup)){
       return transfer.fee;
     }
     else{
       // Note: this clause is unreachable if feeRampup == 0
-      return transfer.fee * (currentTime - transfer.startTime) / transfer.feeRampup; 
+      return transfer.fee * (currentTime.sub(transfer.startTime)).div(transfer.feeRampup);
     }
     
   }
