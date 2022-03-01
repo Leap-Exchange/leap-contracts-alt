@@ -65,7 +65,7 @@ contract Destination {
 
     claimedTransferHashes[transferHash] = true;
     uint256 currentTime = block.timestamp;
-    Data.RewardData memory rewardData = Data.RewardData(transferHash, transferData.destTokenAddress, transferData.destination, getLPFee(transferData, currentTime));
+    Data.RewardData memory rewardData = Data.RewardData(transferHash, transferData.destTokenAddress, transferData.destination, transferData.fee);
     bytes32 rewardHash = keccak256(abi.encode(rewardData));
     bytes32 rewardHashOnion = keccak256(abi.encode(rewardHash, rewardData));
     transferCount++;
@@ -91,9 +91,9 @@ contract Destination {
       return transfer.fee.mul(currentTime.sub(transfer.startTime)).div(transfer.feeRampup);
     }
     
-  }
+  // }
 
-  // For now the length of the reward onion list is 1 (for the sake of speeding up demo)
+  // For now the length of the reward onion list is 1 (for the sake of speeding up demo, and time constraint)
   function declareNewHashChainHead() public {
     require(rewardHashOnionHistoryList.length < lastSourceHeadPosition, 'There is no new hash onion, wait for transfers to be claimed');
     bytes32[] memory rewardList = new bytes32[](rewardHashOnionHistoryList.length - lastSourceHeadPosition);
@@ -101,10 +101,8 @@ contract Destination {
       rewardList[i - lastSourceHeadPosition] = rewardList[i];
     }
     //temp vars
-    bytes memory message = bytes('0');
-    uint gas = 0;
-    bytes32 calldataForL1 = abi.encodeWithSignature("sendMsgToOptimismSrc(bytes32[])", rewardHashOnionHistoryList);
-    IL2CrossDomainMessenger(0x4200000000000000000000000000000000000007).sendMessage(L1_MSGR, calldataForL1);
+     bytes32 calldataForL1 = abi.encodeWithSignature("sendMsgToOptimismSrc(bytes32[])", rewardHashOnionHistoryList);
+    IL2CrossDomainMessenger(0x4200000000000000000000000000000000000007).sendMessage(L1_MSGR, calldataForL1, 100000);
                 
   }
 

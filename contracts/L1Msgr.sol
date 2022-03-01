@@ -27,13 +27,13 @@ contract Destination {
 
   // }
 
-  function sendMsgToOptimismSrc(bytes32[] memory) public{
+  function sendMsgToOptimismSrc(Data.RewardData[] memory rewardList) public{ // might change memory to calldata
     require(msg.sender == 0x4361d0F75A0186C05f971c566dC6bEa5957483fD, "not called from messenger"); // check if called by Proxy__OVM_L1CrossDomainMessenger
     IL1CrossDomainMessenger(0x25ace71c97B33Cc4729CF772ae268934F7ab5fA1).sendMessage(
       L2_SOURCE_CONTRACT,
       abi.encodeWithSignature(
         "processClaims(struct[])", //[TODO]: change later maybe?
-        myFunctionParam
+        rewardList
       ),
       100000 // [TODO]: gas limit change later?
       );
