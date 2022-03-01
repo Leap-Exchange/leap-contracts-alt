@@ -1,15 +1,4 @@
-# Basic Sample Hardhat Project
+# Leap Exchange Contracts
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, a sample script that deploys that contract, and an example of a task implementation, which simply lists the available accounts.
-
-Try running some of the following tasks:
-
-```shell
-npx hardhat accounts
-npx hardhat compile
-npx hardhat clean
-npx hardhat test
-npx hardhat node
-node scripts/sample-script.js
-npx hardhat help
-```
+## Disclaimer
+Currently, Optimism and Arbitrum have not yet been deployed on the same Ethereum testnet chains. Hence, the demo will see both the source (OptimismSrc.sol) and destination (TestOptimismDest.sol) contracts be deployed on Optimism Kovan. Liquidity providers on the destination contract side will still be required to pass a message through L1 to the source contract for the sake of demonstration.

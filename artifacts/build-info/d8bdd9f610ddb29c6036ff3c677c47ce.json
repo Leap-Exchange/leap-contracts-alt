@@ -1,0 +1,65 @@
+{
+  "id": "d8bdd9f610ddb29c6036ff3c677c47ce",
+  "_format": "hh-sol-build-info-1",
+  "solcVersion": "0.8.10",
+  "solcLongVersion": "0.8.10+commit.fc410830",
+  "input": {
+    "language": "Solidity",
+    "sources": {
+      "contracts/ArbitrumDest.sol": {
+        "content": "// // SPDX-License-Identifier: MIT\n// // pragma solidity ^0.8.0;\n// pragma solidity >0.6.11 <0.8.12;\n// pragma experimental ABIEncoderV2;\n\n// import '@openzeppelin/contracts/token/ERC20/IERC20.sol';\n// import '@openzeppelin/contracts/utils/math/SafeMath.sol';\n// import 'arb-bridge-eth/contracts/bridge/interfaces/IInbox.sol';\n// import './interfaces/IArbsys.sol';\n// import './utils/Data.sol';\n\n// contract Destination {\n//   using SafeMath for uint256;\n\n//   address public owner;\n//   address public L2SourceAddr;\n//   mapping(bytes32 => bool) claimedTransferHashes;\n//   uint256 public transferCount; \n//   bytes32[] private rewardHashOnionHistoryList;\n//   uint256 private lastSourceHeadPosition;\n//   address L1_MSGR;\n//   // Inbox inbox = IInbox(0x000000000000000000000000000000000000006E); // L1 messaging contract\n\n//   constructor(address L2SourceAddress, address L1Messenger) public {\n//     L2SourceAddr = L2SourceAddress;\n//     L1_MSGR = L1Messenger;\n//     owner = msg.sender;\n//     transferCount = 0;\n//     rewardHashOnionHistoryList.push(keccak256(abi.encodePacked('0')));\n//   }\n\n//   event TransferClaimed(bytes32 transferHash, uint256 transferNum);\n\n//   modifier restricted() {\n//     require(\n//       msg.sender == owner,\n//       \"This function is restricted to the contract's owner\"\n//     );\n//     _;\n//   }\n\n//   // [TODO]: for UX, will probs remove ???\n//   function claim(address srcTokenAddress, address destTokenAddress, address destination, uint256 amount, uint256 fee, uint256 startTime, uint256 feeRampup) public payable {\n//     Data.TransferData memory td = Data.TransferData(srcTokenAddress, destTokenAddress, destination, amount, fee, startTime, feeRampup);\n//     _claim(td);\n//   }\n\n//   // Attempting to claim a transfer that does not exist on the source side will not benefit the claimer with any rewards. \n//   // Call with caution :p\n//   function _claim(Data.TransferData memory transferData) public payable {\n//     // improve hashing implementation - optimize for least gas usage. For now, the following will have to do\n//     bytes32 transferHash = keccak256(abi.encodePacked(abi.encode(transferData), transferCount));\n//     require(!claimedTransferHashes[transferHash], 'this transfer has already been claimed');\n    \n//     if (transferData.destTokenAddress != address(0))\n//     {\n//       IERC20(transferData.destTokenAddress).transferFrom(msg.sender, transferData.destination, transferData.amount);\n//       // IERC20(transferData.destTokenAddress).transferFrom(msg.sender, address(this), transferData.amount);\n//     } \n//     else{\n//       // Transfer ether here\n//       // require(msg.value >= 0.001 ether, 'minimum ether required is 0.001 ether');\n//       require(msg.value == transferData.amount, 'insufficient ether provided');\n//       payable(transferData.destTokenAddress).transfer(transferData.amount);\n//     }\n\n//     claimedTransferHashes[transferHash] = true;\n//     uint256 currentTime = block.timestamp;\n//     Data.RewardData memory rewardData = Data.RewardData(transferHash, transferData.destTokenAddress, transferData.destination, getLPFee(transferData, currentTime));\n//     bytes32 rewardHash = keccak256(abi.encode(rewardData));\n//     bytes32 rewardHashOnion = keccak256(abi.encode(rewardHash, rewardData));\n//     transferCount++;\n//     emit TransferClaimed(transferHash, transferCount);\n//     // Will need to address this update rate later\n//     // if (transferCount % 100 == 0){\n//     //   rewardHashOnionHistoryList.push(rewardHashOnion);\n//     // }\n\n//     rewardHashOnionHistoryList.push(rewardHashOnion);\n\n//   }\n\n//   function getLPFee(Data.TransferData memory transfer, uint256 currentTime) public pure returns(uint256) {\n//     if (currentTime < transfer.startTime){\n//       return 0;\n//     }\n//     else if (currentTime >= transfer.startTime.add(transfer.feeRampup)){\n//       return transfer.fee;\n//     }\n//     else{\n//       // Note: this clause is unreachable if feeRampup == 0\n//       return transfer.fee.mul(currentTime.sub(transfer.startTime)).div(transfer.feeRampup);\n//     }\n    \n//   }\n\n//   function declareNewHashChainHead() public {\n//     require(rewardHashOnionHistoryList.length < lastSourceHeadPosition, 'There is no new hash onion, wait for transfers to be claimed');\n//     bytes32[] memory rewardList = new bytes32[](rewardHashOnionHistoryList.length - lastSourceHeadPosition);\n//     for(uint i = lastSourceHeadPosition; i <= rewardHashOnionHistoryList.length; i++){\n//       rewardList[i - lastSourceHeadPosition] = rewardList[i];\n//     }\n//     //temp vars\n//     bytes memory message = bytes('0');\n//     uint gas = 0;\n//     bytes32 calldataForL1 = abi.encodeWithSignature(\"sendMsgToOptimism(bytes32[])\", rewardHashOnionHistoryList);\n//     IArbsys(address(100)).sendTxToL1(L1_LOCKUP_CONTRACT, calldataForL1); //[MODIFY for L1 contract]\n                \n//   }\n\n//   // only the owner of the contract can set the new address of the source contract - for now...\n//   function changeL2SourceAddr(address newAddress) public restricted{ \n//     L2SourceAddr = newAddress;\n\n//   }\n\n//   // fallback function\n//   fallback() external{\n//   }\n\n//   // temporary - will probably not be included in the final implementation\n//   function changeOwner(address newOwner) public restricted { \n//     require(owner != address(0), '0x0 address cannot be set as the owner!');\n//     require(owner != newOwner, 'this address is already the owner of the contract');\n//     owner = newOwner;\n//   }\n\n// }\n"
+      }
+    },
+    "settings": {
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "outputSelection": {
+        "*": {
+          "*": [
+            "abi",
+            "evm.bytecode",
+            "evm.deployedBytecode",
+            "evm.methodIdentifiers",
+            "metadata"
+          ],
+          "": [
+            "ast"
+          ]
+        }
+      }
+    }
+  },
+  "output": {
+    "errors": [
+      {
+        "component": "general",
+        "errorCode": "3420",
+        "formattedMessage": "Warning: Source file does not specify required compiler version! Consider adding \"pragma solidity ^0.8.10;\"\n--> contracts/ArbitrumDest.sol\n\n",
+        "message": "Source file does not specify required compiler version! Consider adding \"pragma solidity ^0.8.10;\"",
+        "severity": "warning",
+        "sourceLocation": {
+          "end": -1,
+          "file": "contracts/ArbitrumDest.sol",
+          "start": -1
+        },
+        "type": "Warning"
+      }
+    ],
+    "sources": {
+      "contracts/ArbitrumDest.sol": {
+        "ast": {
+          "absolutePath": "contracts/ArbitrumDest.sol",
+          "exportedSymbols": {},
+          "id": 1,
+          "license": "MIT",
+          "nodeType": "SourceUnit",
+          "nodes": [],
+          "src": "5516:0:0"
+        },
+        "id": 0
+      }
+    }
+  }
+}

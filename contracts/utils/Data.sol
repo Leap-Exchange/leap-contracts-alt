@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.11;
+pragma solidity ^0.8.0;
 import '@openzeppelin/contracts/utils/math/SafeMath.sol';
 
 library Data{
@@ -11,8 +11,7 @@ library Data{
     address destination;
     uint256 amount;
     uint256 fee;
-    uint256 startTime;
-    uint256 feeRampup;
+    // uint256 feeRampup; // [TODO]: Consider removing feeRampup
   }
 
   struct RewardData { 
